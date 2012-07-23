@@ -33,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/multichoice/question.php');
 require_once($CFG->dirroot . '/question/type/scripted/question.php');
 require_once($CFG->dirroot . '/question/type/scripted/questiontype.php');
-
+require_once($CFG->dirroot . '/question/type/boolean/question.php');
+require_once($CFG->dirroot . '/question/type/boolean/questiontype.php');
 
 /**
  * The multi-answer question type class.
@@ -147,11 +148,13 @@ class qtype_multianswerbu extends question_type {
                                         array('question' => $oldwrappedquestion->id));
                                 break;
 			    
- 		            case 'scripted':
-                                $DB->delete_records('question_scripted',
-                                        array('question' => $oldwrappedquestion->id));
+                            case 'scripted':
+                                $DB->delete_records('question_scripted', array('question' => $oldwrappedquestion->id));
                                 break;
 
+                            case 'boolean':
+                                $DB->detele_records('question_boolean', array('question' => $oldwrappedquestion->id));
+                                break;
 
                             case 'numerical':
                                 $DB->delete_records('question_numerical',
@@ -322,8 +325,8 @@ define('BU_NUMERICAL_ABS_ERROR_MARGIN', 6);
 define('BU_ANSWER_TYPE_DEF_REGEX',
         '(NUMERICAL|NM)|(MULTICHOICE|MC)|(MULTICHOICE_V|MCV)|(MULTICHOICE_H|MCH)|' .
         '(SHORTANSWER|SA|MW)|(SHORTBU_ANSWER_C|SAC|MWC)|' .
-        '(SCRIPTED|SC)|(SCRIPTED_C|SCC)|(SCRIPTED_DEC|SN|SDEC)|(SCRIPTED_HEX|SHEX)|(SCRIPTED_OCT|SOCT)|(SCRIPTED_BIN|SBIN)|(MULTICHOICE_SHUFFLE|MCS)'
-    
+        '(SCRIPTED|SC)|(SCRIPTED_C|SCC)|(SCRIPTED_DEC|SN|SDEC)|(SCRIPTED_HEX|SHEX)|(SCRIPTED_OCT|SOCT)|(SCRIPTED_BIN|SBIN)|(MULTICHOICE_SHUFFLE|MCS)|' .
+        '(BOOLEAN_EQUIVALENT|BEQ|BOOL)|(BOOLEAN_EXACT|BEX)|(BOOLEAN_SUM_OF_PRODUCTS|BSOP)|(BOOLEAN_PRODUCT_OF_SUMS|BPOS)' 
     );
 
 
@@ -352,7 +355,12 @@ define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_HEX', 12);
 define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_OCT', 13);
 define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_BIN', 14);
 define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_MULTICHOICE_SHUFFLE', 15);
-define('BU_ANSWER_REGEX_ALTERNATIVES', 16);
+define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_EQUIVALENT', 16);
+define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_EXACT', 17);
+define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_SOP', 18);
+define('BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_POS', 19);
+
+define('BU_ANSWER_REGEX_ALTERNATIVES', 20);
 
 function qtype_multianswerbu_extract_question($text) 
 {
@@ -514,7 +522,51 @@ function qtype_multianswerbu_extract_question($text)
             $wrapped->incorrectfeedback['format'] = FORMAT_HTML;
             $wrapped->incorrectfeedback['itemid'] = '';
             $wrapped->layout = qtype_multichoice_base::LAYOUT_HORIZONTAL;
+        }
+        //if we have a Boolean Logic expression, set up its options 
+        else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_EQUIVALENT])) 
+        {
+            $wrapped->qtype = 'boolean';
+            $wrapped->inputmethod = qtype_boolean_input_method::METHOD_BOOLEAN_ALGEBRA;
+            $wrapped->answerform = 'loose';
+            $wrapped->limitgates = false;
+            $wrapped->freeinverters = true;
+            $wrapped->gate_limit = 0;
         } 
+        //if we have a Boolean Logic (exact) expression, set up its options 
+        else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_EXACT])) 
+        {
+            $wrapped->qtype = 'boolean';
+            $wrapped->inputmethod = qtype_boolean_input_method::METHOD_BOOLEAN_ALGEBRA;
+            $wrapped->answerform = 'strict';
+            $wrapped->limitgates = false;
+            $wrapped->freeinverters = true;
+            $wrapped->gate_limit = 0;
+        } 
+        //if we have a Boolean Logic (exact) expression, set up its options 
+        else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_SOP])) 
+        {
+            $wrapped->qtype = 'boolean';
+            $wrapped->inputmethod = qtype_boolean_input_method::METHOD_BOOLEAN_ALGEBRA;
+            $wrapped->answerform = 'sop';
+            $wrapped->limitgates = false;
+            $wrapped->freeinverters = true;
+            $wrapped->gate_limit = 0;
+        } 
+        //if we have a Boolean Logic (exact) expression, set up its options 
+        else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_BOOLEAN_POS])) 
+        {
+            $wrapped->qtype = 'boolean';
+            $wrapped->inputmethod = qtype_boolean_input_method::METHOD_BOOLEAN_ALGEBRA;
+            $wrapped->answerform = 'pos';
+            $wrapped->limitgates = false;
+            $wrapped->freeinverters = true;
+            $wrapped->gate_limit = 0;
+        } 
+
+
+
+
         else
         {
             print_error('unknownquestiontype', 'question', '', $answerregs[2]);

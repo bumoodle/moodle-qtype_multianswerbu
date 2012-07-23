@@ -27,6 +27,7 @@
 require_once($CFG->dirroot . '/question/type/shortanswer/question.php');
 require_once($CFG->dirroot . '/question/type/numerical/question.php');
 require_once($CFG->dirroot . '/question/type/scripted/question.php');
+require_once($CFG->dirroot . '/question/type/boolean/question.php');
 require_once($CFG->dirroot . '/question/type/multichoice/question.php');
 
 
@@ -115,6 +116,7 @@ class qtype_multianswerbu_question extends question_graded_automatically
                     break;
                 case 'numerical':
                 case 'scripted':
+                case 'boolean':
                 case 'shortanswer':
                     $answerbit = '_____';
                     break;

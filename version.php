@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_multianswerbu';
-$plugin->version   = 2011102700;
+$plugin->version   = 2012072200;
 
 $plugin->requires  = 2011102700;
 $plugin->dependencies = array(
@@ -34,6 +34,7 @@ $plugin->dependencies = array(
     'qtype_numerical'   => 2011102700,
     'qtype_shortanswer' => 2011102700,
     'qtype_scripted' => 2011102700,
+    'qtype_boolean' => 2011102700,
 );
 
 $plugin->maturity  = MATURITY_STABLE;

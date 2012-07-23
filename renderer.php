@@ -80,7 +80,7 @@ class qtype_multianswerbu_renderer extends qtype_renderer
     public function subquestion(question_attempt $qa, question_display_options $options, $index, question_graded_automatically $subq) 
     {
         $subtype = $subq->qtype->name();
-        if ($subtype == 'numerical' || $subtype == 'shortanswer' || $subtype == 'scripted') {
+        if ($subtype == 'numerical' || $subtype == 'shortanswer' || $subtype == 'scripted' || $subtype == 'boolean') {
             $subrenderer = 'textfield';
         } else if ($subtype == 'multichoice') {
             if ($subq->layout == qtype_multichoice_base::LAYOUT_DROPDOWN) {
@@ -185,7 +185,7 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
         $fieldname = $fieldprefix . 'answer';
 
         $response = $qa->get_last_qt_var($fieldname);
-        if ($subq->qtype->name() == 'shortanswer' || $subq->qtype->name() == 'scripted') {
+        if ($subq->qtype->name() == 'shortanswer' || $subq->qtype->name() == 'scripted' || $subq->qtype->name() == 'boolean' ) {
             $matchinganswer = $subq->get_matching_answer(array('answer' => $response));
         } else if ($subq->qtype->name() == 'numerical') {
             $matchinganswer = $subq->get_matching_answer($response, 1);
@@ -213,8 +213,14 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
         if(array_key_exists('answer', $correct_response))
             $size = max($size, strlen(trim($correct_response['answer'])));
 
-        $size = min(60, round($size + rand(0, $size*0.15)));
-        // The rand bit is to make guessing harder
+        //if this is a pure short answer, randomize its size    
+        if($subq->qtype->name() == 'shortanswer')
+            $size = min(60, round($size + rand(0, $size*0.15)));
+        //if this is a Boolean quesiton, add some spacing to account for various functions
+        elseif($subq->qtype->name() == 'boolean')
+            $size = min(60, $size + 10);
+        else
+            $size = min(60, round($size));
 
         $inputattributes = array(
             'type' => 'text',
@@ -226,6 +232,10 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
         if ($options->readonly) {
             $inputattributes['readonly'] = 'readonly';
         }
+
+        //if the subquestion is of the Boolean type
+        if($subq->qtype->name() == 'boolean')
+            $inputattributes['style'] = 'font-family:monospace';
 
         $feedbackimg = '';
 
