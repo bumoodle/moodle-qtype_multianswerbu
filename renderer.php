@@ -218,7 +218,7 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
             $size = min(60, round($size + rand(0, $size*0.15)));
         //if this is a Boolean quesiton, add some spacing to account for various functions
         elseif($subq->qtype->name() == 'boolean')
-            $size = min(60, $size + 10);
+            $size = min(60, max($size + 10, 20));
         else
             $size = min(60, round($size));
 
