@@ -59,9 +59,6 @@ class qtype_multianswerbu_renderer extends qtype_renderer
                 $output .= $this->subquestion($qa, $options, $index, $question->subquestions[$index]);
             }
 
-            //substitute in any variables which are handled by the init-script
-            $fragment = qtype_scripted_question::replace_variables($fragment, $question->vars);
-
             //output the fragment directly
             $output .= $question->format_text($fragment, $question->questiontextformat, $qa, 'question', 'questiontext', $question->id);
         }
@@ -200,6 +197,12 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
         // Work out a good input field size.
         $size = max(1, strlen(trim($response)) + 1);
         foreach ($subq->answers as $ans) {
+
+            // If we have a scripted question, evaluate its answer.
+            if($subq->qtype->name() == 'scripted') {
+                $ans = $subq->evaluate_answer($ans);
+            }
+
             $size = max($size, strlen(trim($ans->answer)));
         }
 
@@ -208,6 +211,7 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
 
         //get the correct response
         $correct_response = $subq->get_correct_response();
+
 
         //and, if it has an answer, take its size into account
         if(array_key_exists('answer', $correct_response))
@@ -249,14 +253,15 @@ class qtype_multianswerbu_textfield_renderer extends qtype_multianswerbu_subq_re
         if ($subq->qtype->name() == 'shortanswer') 
         {
             $correctanswer = $subq->get_matching_answer($subq->get_correct_response());
+            $sampleanswer = $correctanswer->answer;
         } else {
-            $correctanswer = $subq->get_correct_answer();
+            $sampleanswer = $subq->summarise_response($subq->get_correct_response());
         }
 
         $feedbackpopup = $this->feedback_popup($subq, $matchinganswer->fraction,
                 $subq->format_text($matchinganswer->feedback, $matchinganswer->feedbackformat,
                         $qa, 'question', 'answerfeedback', $matchinganswer->id),
-                s($correctanswer->answer), $options);
+                s($sampleanswer), $options);
 
         $output = '';
         $output .= html_writer::start_tag('label', array('class' => 'subq'));
@@ -315,6 +320,7 @@ class qtype_multianswerbu_multichoice_inline_renderer
 
         $order = $subq->get_order($qa);
         $rightanswer = $subq->answers[$order[reset($subq->get_correct_response())]];
+
         $feedbackpopup = $this->feedback_popup($subq, $matchinganswer->fraction,
                 $subq->format_text($matchinganswer->feedback, $matchinganswer->feedbackformat, $qa, 'question', 'answerfeedback', $matchinganswer->id),
                 $subq->format_text($rightanswer->answer, $rightanswer->answerformat, $qa, 'question', 'answer', $rightanswer->id), $options);

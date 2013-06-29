@@ -38,7 +38,7 @@ require_once($CFG->dirroot . '/question/type/multichoice/question.php');
  * @copyright  2010 Pierre Pichet
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_multianswerbu_question extends question_graded_automatically 
+class qtype_multianswerbu_question extends qtype_scripted_question 
 {
     /** @var array of question_graded_automatically. */
     public $subquestions = array();
@@ -70,11 +70,13 @@ class qtype_multianswerbu_question extends question_graded_automatically
     {
         //run the initialization script _once_
         //that result is passed to each of the subquestions
-        list($errors, $vars, $funcs) = qtype_scripted_question::execute_script($this->init_code, $this->questiontext);
+        list(, $vars, $funcs) = qtype_scripted_language_manager::execute_script('lua', $this->init_code);
 
         //save a global list of variables, which are used for formatting question text
         $this->vars = $vars;
-    	$step->set_qt_var('_vars', qtype_scripted_question::safe_serialize($vars));
+        $this->language = 'lua';
+    	$step->set_qt_var('_vars', json_encode($vars));
+    	$step->set_qt_var('_funcs', json_encode($funcs));
 
         //start each of the subquestions
         foreach ($this->subquestions as $i => $subq)
@@ -86,19 +88,23 @@ class qtype_multianswerbu_question extends question_graded_automatically
             $subq->start_attempt($substep, $variant);
 
             //if we're running a scripted question, pass in the results of our initialization script
-            if($subq->get_type_name() == 'scripted')
+            if($subq->get_type_name() == 'scripted') {
                 $subq->apply_code_result($substep, $vars, $funcs);
+            }
         }
     }
 
     public function apply_attempt_state(question_attempt_step $step) 
     {
         //restore the global list of variables
-        $this->vars = qtype_scripted_question::safe_unserialize($step->get_qt_var('_vars'));
+        $this->vars = json_decode($step->get_qt_var('_vars'));
+        $this->funcs = json_decode($step->get_qt_var('_funcs'));
+        $this->language = 'lua';
 
         //ask each of the subquestions to restore their independant states
-        foreach ($this->subquestions as $i => $subq) 
+        foreach ($this->subquestions as $i => $subq) {
             $subq->apply_attempt_state($this->get_substep($step, $i));
+        }
     }
 
     public function get_question_summary() {

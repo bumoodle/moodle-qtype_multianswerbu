@@ -416,6 +416,7 @@ function qtype_multianswerbu_extract_question($text)
         else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED])) 
         {
             $wrapped->qtype = 'scripted';
+            $wrapped->language = 'lua';
             $wrapped->response_mode = qtype_scripted_response_mode::MODE_STRING;
             $wrapped->answer_mode = qtype_scripted_answer_mode::MODE_MUST_EQUAL;
             $wrapped->init_code = '';
@@ -423,6 +424,7 @@ function qtype_multianswerbu_extract_question($text)
         else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_CASE])) 
         {
             $wrapped->qtype = 'scripted';
+            $wrapped->language = 'lua';
             $wrapped->response_mode = qtype_scripted_response_mode::MODE_STRING_CASE_SENSITIVE;
             $wrapped->answer_mode = qtype_scripted_answer_mode::MODE_MUST_EQUAL;
             $wrapped->init_code = '';
@@ -430,6 +432,7 @@ function qtype_multianswerbu_extract_question($text)
         else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_DEC])) 
         {
             $wrapped->qtype = 'scripted';
+            $wrapped->language = 'lua';
             $wrapped->response_mode = qtype_scripted_response_mode::MODE_NUMERIC;
             $wrapped->answer_mode = qtype_scripted_answer_mode::MODE_MUST_EQUAL;
             $wrapped->init_code = '';
@@ -437,6 +440,7 @@ function qtype_multianswerbu_extract_question($text)
         else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_HEX])) 
         {
             $wrapped->qtype = 'scripted';
+            $wrapped->language = 'lua';
             $wrapped->response_mode = qtype_scripted_response_mode::MODE_HEXADECIMAL;
             $wrapped->answer_mode = qtype_scripted_answer_mode::MODE_MUST_EQUAL;
             $wrapped->init_code = '';
@@ -444,6 +448,7 @@ function qtype_multianswerbu_extract_question($text)
         else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_BIN])) 
         {
             $wrapped->qtype = 'scripted';
+            $wrapped->language = 'lua';
             $wrapped->response_mode = qtype_scripted_response_mode::MODE_BINARY;
             $wrapped->answer_mode = qtype_scripted_answer_mode::MODE_MUST_EQUAL;
             $wrapped->init_code = '';
@@ -451,6 +456,7 @@ function qtype_multianswerbu_extract_question($text)
         else if (!empty($answerregs[BU_ANSWER_REGEX_BU_ANSWER_TYPE_SCRIPTED_OCT])) 
         {
             $wrapped->qtype = 'scripted';
+            $wrapped->language = 'lua';
             $wrapped->response_mode = qtype_scripted_response_mode::MODE_OCTAL;
             $wrapped->answer_mode = qtype_scripted_answer_mode::MODE_MUST_EQUAL;
             $wrapped->init_code = '';

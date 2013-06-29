@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 
+require_once($CFG->dirroot . '/question/type/scripted/lib.php');
 require_once($CFG->dirroot . '/question/type/scripted/edit_scripted_form.php');
 
 /**
@@ -35,7 +36,7 @@ require_once($CFG->dirroot . '/question/type/scripted/edit_scripted_form.php');
  * @copyright  2007 Jamie Pratt me@jamiep.org
  * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-class qtype_multianswerbu_edit_form extends question_edit_form 
+class qtype_multianswerbu_edit_form extends qtype_scripted_edit_form 
 {
 
     //  $questiondisplay will contain the qtype_multianswerbu_extract_question from
@@ -144,8 +145,7 @@ class qtype_multianswerbu_edit_form extends question_edit_form
         $mform->addElement('submit', 'analyzequestion', get_string('decodeverifyquestiontext', 'qtype_multianswerbu'));
 
         //insert an "init script" editor box
-        qtype_scripted_edit_form::insert_editor($mform);
-
+        $mform->addElement('scripteditor', 'init_code', get_string('initscript', 'qtype_scripted'));
 
         $mform->registerNoSubmitButton('analyzequestion');
         if ($this->reload) {
@@ -435,7 +435,7 @@ class qtype_multianswerbu_edit_form extends question_edit_form
     }
 
     public function validation($data, $files) {
-        $errors = parent::validation($data, $files);
+        $errors = question_edit_form::validation($data, $files);
 
         $questiondisplay = qtype_multianswerbu_extract_question($data['questiontext']);
 
