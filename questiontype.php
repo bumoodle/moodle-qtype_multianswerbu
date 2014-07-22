@@ -244,7 +244,7 @@ class qtype_multianswerbu extends question_type {
         parent::delete_question($questionid, $contextid);
     }
 
-    protected function initialise_question_instance($question, $questiondata) 
+    protected function initialise_question_instance(question_definition $question, $questiondata) 
     {
         parent::initialise_question_instance($question, $questiondata);
 
