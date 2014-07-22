@@ -52,8 +52,7 @@ class backup_qtype_multianswerbu_plugin extends backup_qtype_plugin {
         $this->add_question_question_answers($pluginwrapper);
 
         // Now create the qtype own structures
-        $multianswerbu = new backup_nested_element('multianswerbu', array('id'), array(
-            'question', 'sequence'));
+        $multianswerbu = new backup_nested_element('multianswerbu', array('id'), array('question', 'sequence', 'init_code'));
 
         // Now the own qtype tree
         $pluginwrapper->add_child($multianswerbu);
